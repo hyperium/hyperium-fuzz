@@ -1,0 +1,52 @@
+name: CI
+on:
+  pull_request:
+  push:
+    branches:
+      - master
+
+env:
+  RUST_BACKTRACE: 1
+  CARGO_FUZZ_REPO: https://github.com/rust-fuzz/cargo-fuzz
+
+jobs:
+
+  build-and-test:
+    name: Test building the fuzzers
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v1
+
+      - name: Install Rust nightly
+        uses: actions-rs/toolchain@v1
+        with:
+          profile: minimal
+          toolchain: nightly
+          override: true
+          components: rust-src, rustfmt, llvm-tools-preview
+
+      - name: install cargo-fuzz from git
+        run: cargo +nightly install --force --git "$CARGO_FUZZ_REPO" 
+      
+      - name: install grcov
+        run: cargo install --force grcov
+
+      - name: Clone all dependencies
+        run: bash ./clone-deps.sh
+        env:
+          DEPTH: 1
+
+      - name: build all fuzzers
+        run: |
+          cargo fuzz build
+          cargo fuzz list
+
+      - name: do a quick run of all fuzzers
+        run: |
+          cd fuzz
+          ./run_all.sh
+        env:
+          USE_CARGO_LIBAFL: 0
+          TEST: 1
