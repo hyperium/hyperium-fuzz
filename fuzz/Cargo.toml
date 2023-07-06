@@ -1,0 +1,134 @@
+[package]
+name = "hyperium-fuzz-targets"
+version = "0.0.0"
+edition = "2021"
+publish = false
+
+[package.metadata]
+cargo-fuzz = true
+
+[features]
+default = ["use_libfuzzer", "use_grammar"]
+use_libfuzzer = ["libfuzzer-sys"]
+use_libafl = ["cargo-libafl-helper"]
+use_grammar = []
+enable_tracing = []
+
+[dependencies]
+arbitrary = { version = "1", features = ["derive"] }
+cargo-libafl-helper = { version = "0", optional = true }
+libfuzzer-sys = { version = "0.4", features = ["arbitrary-derive"], optional = true }
+
+hpack = { git = "https://github.com/mlalic/hpack-rs.git", rev = "refs/pull/7/head" }
+hyperium-fuzz-utils = { path = ".." }
+rand = "0.8"
+rand_pcg = "0.3"
+
+futures = { version = "0.3", default-features = false, features = ["std"] }
+tokio = { version = "1", features = ["full"] }
+tokio-test = { version = "0.4" }
+
+bytes = "1"
+lazy_static = "*"
+
+tracing-subscriber = { version = "0.3", features = ["env-filter"] }
+tracing = "*"
+
+# in-scope libraries
+h2 = { path = "../../h2/" }
+h2-support = { path = "../../h2/tests/h2-support" }
+http = { path = "../../http/" }
+http-body = { path = "../../http-body/http-body" }
+http-body-util = { path = "../../http-body/http-body-util" }
+httparse = { path = "../../httparse/" }
+httpdate = { path = "../../httpdate" }
+hyper = { path = "../../hyper/", features = ["full"] }
+
+[patch.crates-io]
+http-body-util = { path = "../../http-body/http-body-util" }
+http-body = { path = "../../http-body/http-body" }
+http = { path = "../../http" }
+h2 = { path = "../../h2", features = ['unstable'] }
+httparse = { path = "../../httparse" }
+httpdate = { path = "../../httpdate" }
+hyper = { path = "../../hyper/" }
+
+
+# Prevent this from interfering with workspaces
+[workspace]
+members = ["."]
+
+[profile.release]
+debug = 1
+
+[[bin]]
+name = "fuzz_h2_e2e"
+path = "fuzz_targets/h2/e2e.rs"
+test = false
+doc = false
+
+[[bin]]
+name = "fuzz_h2_client_builder"
+path = "fuzz_targets/h2/client_builder.rs"
+test = false
+doc = false
+
+[[bin]]
+name = "fuzz_h2_server2"
+path = "fuzz_targets/h2/server2.rs"
+test = false
+doc = false
+
+[[bin]]
+name = "fuzz_h2_client2"
+path = "fuzz_targets/h2/client2.rs"
+test = false
+doc = false
+
+[[bin]]
+name = "fuzz_h2_hpack"
+path = "fuzz_targets/h2/hpack.rs"
+test = false
+doc = false
+
+[[bin]]
+name = "fuzz_http_http"
+path = "fuzz_targets/http/http.rs"
+test = false
+doc = false
+
+[[bin]]
+name = "fuzz_http_uri"
+path = "fuzz_targets/http/uri.rs"
+test = false
+doc = false
+
+[[bin]]
+name = "fuzz_httparse_chunk_size"
+path = "fuzz_targets/httparse/parse_chunk_size.rs"
+test = false
+doc = false
+
+[[bin]]
+name = "fuzz_httparse_headers"
+path = "fuzz_targets/httparse/parse_headers.rs"
+test = false
+doc = false
+
+[[bin]]
+name = "fuzz_httpdate_roundtrip"
+path = "fuzz_targets/httpdate/roundtrip.rs"
+test = false
+doc = false
+
+[[bin]]
+name = "fuzz_httparse_request"
+path = "fuzz_targets/httparse/parse_request.rs"
+test = false
+doc = false
+
+[[bin]]
+name = "fuzz_httparse_response"
+path = "fuzz_targets/httparse/parse_response.rs"
+test = false
+doc = false

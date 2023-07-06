@@ -1,0 +1,55 @@
+[package]
+name = "hyperium-fuzz-utils"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+rand = "0.8"
+rand_pcg = "0.3"
+arbitrary = { version = "1",  features = ["derive"] }
+hpack = { git = "https://github.com/mlalic/hpack-rs.git", rev = "refs/pull/7/head" }
+bytes = "1"
+futures-util = { version = "0.3", default-features = false, features = ["alloc"] }
+pin-project-lite = "0.2.4"
+tokio = { version = "1", features = ["full"] }
+
+tracing-subscriber = { version = "0.3", features = ["env-filter"] }
+tracing = "*"
+
+serde = { version = "1", features = ["derive"] }
+# serde_bytes = "0.11.9"
+bincode = "1.3.3"
+
+# lain = { git = "https://github.com/landaire/lain.git", rev = "0fb4a5b" }
+
+
+# in-scope libraries
+h2 = { path = "../h2/" }
+h2-support = { path = "../h2/tests/h2-support" }
+http = { path = "../http/" }
+http-body = { path = "../http-body/http-body" }
+http-body-util = { path = "../http-body/http-body-util" }
+httparse = { path = "../httparse/" }
+httpdate = { path = "../httpdate" }
+hyper = { path = "../hyper/", features = ["full"] }
+
+[patch.crates-io]
+http-body-util = { path = "../http-body/http-body-util" }
+http-body = { path = "../http-body/http-body" }
+http = { path = "../http" }
+h2 = { path = "../h2", features = ['unstable'] }
+httparse = { path = "../httparse" }
+httpdate = { path = "../httpdate" }
+hyper = { path = "../hyper/" }
+
+[[bin]]
+name = "f0_http_gen"
+path = "./src/tools/f0_http_gen.rs"
+
+[[bin]]
+name = "h2_fuzz_client_test"
+path = "./src/tools/h2_fuzz_client_test.rs"
+
+
+[profile.release]
+debug = true
